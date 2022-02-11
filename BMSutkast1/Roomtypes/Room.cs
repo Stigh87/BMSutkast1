@@ -9,7 +9,7 @@ namespace BMSutkast1
 {
     public class Room
     {
-        private readonly int Area; //areal sendes til romkontroller? avgjøre oppvarming og evt strømforbruk
+        public int Area; //areal sendes til romkontroller? avgjøre oppvarming og evt strømforbruk
         public Guid RoomId;
         public int RoomNr;
         public string RoomType;

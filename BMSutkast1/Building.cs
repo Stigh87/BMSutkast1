@@ -22,9 +22,9 @@ namespace BMSutkast1
             State = Status.Sleep; //skal arves (reversert) fra floor
             Floors = new List<Floor>
             {
-                new Floor(0),
                 new Floor(1),
-                new Floor(2)
+                new Floor(2),
+                new Floor(3)
             };
         }
 

@@ -12,7 +12,8 @@ namespace BMSutkast1
 
         static async Task Main(string[] args)
         {
-            var building = new Building();
+            var display = new Display();
+            display.MainMenu();
             
             //var room = new Office(6,1,1);
             //room.PrintRoomInfo();
@@ -32,7 +33,7 @@ namespace BMSutkast1
             Thread.Sleep(7000);
             office.Controller.State = Status.Sleep;
             office.Controller.ChangeState();
- */
+ 
             foreach (var floor in building.Floors)
             {
                 
@@ -59,7 +60,7 @@ namespace BMSutkast1
                     
                 }
             }
-
+*/
             //Await
             //Public/protected/internal
             //refactoring? / mer oppdeling

@@ -69,8 +69,9 @@ namespace BMSutkast1
             Cool = new Cooling(_id);
             Vent = new Ventilation(_id);
             Light = new Light(_id);
+            SetTemperature = 15;
         }
-        internal async Task ChangeState()
+        public async Task ChangeState()
         {
             SetTemperature = State switch
             {

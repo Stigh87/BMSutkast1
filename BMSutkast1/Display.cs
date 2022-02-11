@@ -110,9 +110,14 @@ namespace BMSutkast1
             var command = Convert.ToInt32(Console.ReadLine());
             if (command == 0) await PrintFloorMenu(floorIndex);
             if (command == 1) await RoomStateChanger(floorIndex, roomIndex);
-            if (command == 2) ; //settemp aktuelt rom
-            if (command == 3) ; //setLux aktuelt rom
+            if (command == 2) ChangeRoomSetValue("Temp"); //settemp aktuelt rom
+            if (command == 3) ChangeRoomSetValue("Lux"); //setLux aktuelt rom
 
+        }
+
+        private void ChangeRoomSetValue(string type)
+        {
+            //lux eller temp <--------------------------Fortsett her
         }
 
         private async Task RoomStateChanger(int floorIndex, int roomIndex)

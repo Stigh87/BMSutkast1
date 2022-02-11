@@ -143,7 +143,7 @@ namespace BMSutkast1
                     Cool.OnOff = false;
                     Cool.Interlock = false;
                 }
-               await Task.Delay(1300);
+               //Task.Delay(1300);
               //Thread.Sleep(200);
             }
         }
@@ -160,7 +160,7 @@ namespace BMSutkast1
         }
         public async Task Printer()
         {
-            PrintRoomInfo();
+            await PrintRoomInfo();
                // Task.Delay(1300);
         }
 

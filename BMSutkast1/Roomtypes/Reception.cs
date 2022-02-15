@@ -8,7 +8,7 @@ namespace BMSutkast1
 {
     internal class Reception : Mingle
     {
-        public Reception(int area, int roomIndex, int floorNr) : base(area, roomIndex, floorNr)
+        public Reception(int area, int roomNr, int floorNr) : base(area, roomNr, floorNr)
         {
             RoomType = "Reseption";
         }

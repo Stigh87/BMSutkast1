@@ -21,6 +21,9 @@ namespace BMSutkast1.Sensor
         // set status - start timer - changestate
         //
         //}
-        
+        public bool MotionOpen()
+        {
+            return Open;
+        }
     }
 }

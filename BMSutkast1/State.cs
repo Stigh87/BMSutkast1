@@ -11,8 +11,9 @@ namespace BMSutkast1
             Sleep,
             Wakeup,
             Awake,
-            Standby,
+            Standby
+            
     }
 
- 
+
 }

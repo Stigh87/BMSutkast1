@@ -11,80 +11,80 @@ namespace BMSutkast1
 {
     public class RoomController
     {
-        public Guid _id { get; }
-        public string RoomType;
-        public Guid RoomId;
-        public Status State;
+        private Guid Id { get; }
+        public Guid RoomId { get; set; }
+        private readonly string RoomType;
+        internal Status State;
 
         //inputs:
         //IO-SENSOR
-        public DoorSensor Door;
-        public WindowSensor Window;
-        public MotionSensor Motion;
+        private DoorSensor Door;
+        private WindowSensor Window;
+        private MotionSensor Motion;
 
         //VALUE-SENSOR
-        public Co2Sensor Co2;
-        public LuxSensor Lux;
-        public TemperaturSensor Temp;
+        private Co2Sensor Co2;
+        private LuxSensor Lux;
+        private TemperaturSensor Temp;
 
-        public ButtonPanel Button;
+        private ButtonPanel Button;
 
         //FRA COMMAND/DISPLAY
-        public double SetTemperature; //max 22 min 16 (T>22 ? 22 : T<16 ? 16 : T)
-        public int SetLux;
+        private double _setTemperature; //max 22 min 16 (T>22 ? 22 : T<16 ? 16 : T)
+        private int _setLux;
 
         //Outputs:
-        public Cooling Cool;
-        public Heating Heat;
-        public Ventilation Vent;
-        public Light Light;
+        private readonly Cooling _cool;
+        private readonly Heating _heat;
+        private Ventilation Vent;
+        private Light Light;
 
         public RoomController(string roomtype, Guid roomId, int area)
         {
             RoomId = roomId;
             RoomType = roomtype;
-            _id = Guid.NewGuid();
+            Id = Guid.NewGuid();
             State = Status.Sleep;
-            Motion = new MotionSensor(_id);
-            Temp = new TemperaturSensor(_id);
-            Lux = new LuxSensor(_id);
+            Motion = new MotionSensor(Id);
+            Temp = new TemperaturSensor(Id);
+            Lux = new LuxSensor(Id);
             if (RoomType == "Meeting")
             {
-                Button = new ButtonPanel(_id);
+                Button = new ButtonPanel(Id);
             }
             if (RoomType == "Office")
             {
-                Window = new WindowSensor(_id);
+                Window = new WindowSensor(Id);
             }
             if (RoomType != "Office")
             {
-                Co2 = new Co2Sensor(_id);
+                Co2 = new Co2Sensor(Id);
             }
             if (RoomType != "Mingle" || RoomType != "Cubicle")
             {
-                Door = new DoorSensor(_id);
+                Door = new DoorSensor(Id);
             }
-
-            Heat = new Heating(_id);
-            Cool = new Cooling(_id);
-            Vent = new Ventilation(_id);
-            Light = new Light(_id);
-            SetTemperature = 15;
+            _heat = new Heating(Id);
+            _cool = new Cooling(Id);
+            Vent = new Ventilation(Id);
+            Light = new Light(Id);
+            _setTemperature = 15;
         }
+
         public async Task ChangeState()
         {
-            SetTemperature = State switch
+            _setTemperature = State switch
             {
                 Status.Sleep => 16,
                 Status.Wakeup => 18,
                 Status.Standby => 20,
                 Status.Awake => 22,
-                _ => SetTemperature
+                _ => _setTemperature
             };
-            SetLux = State == Status.Awake ? 500 : 0;
-            await AdjustTemperature();
-            await AdjustLights();
-            await AdjustVentilation();
+            _setLux = State == Status.Awake ? 500 : 0;
+             AdjustTemperature();
+             AdjustLights();
+             AdjustVentilation();
         }
 
         private async Task AdjustVentilation()
@@ -95,78 +95,76 @@ namespace BMSutkast1
             if (State == Status.Wakeup) ; //timer 10min så ventOff, om ikke awake fra motion.
 
         }
-
         private async Task AdjustLights()
         {
-           while (Lux.ActualLux != SetLux)
+           while (Lux.ActualLux != _setLux)
             {
-                if (Lux.ActualLux > SetLux)
+                if (Lux.ActualLux > _setLux)
                 {
                     Light.Value -= 5;
                     Lux.ActualLux -= 50;
                 }
-                if (Lux.ActualLux < SetLux)
+                if (Lux.ActualLux < _setLux)
                 {
                     Light.OnOff = true;
                     Light.Value += 5;
                     Lux.ActualLux += 50;
                 }
                 Light.OnOff = Lux.ActualLux != 0;
-                //Task.Delay(1300);
+               await Task.Delay(1000);
             }
         }
 
         internal async Task AdjustTemperature()
         {
-            while (Math.Abs(Temp.ActualTemperature - SetTemperature) > 0.1)
+            while (Math.Abs(Temp.ActualTemperature - _setTemperature) > 0.1)
             {
-                if (Temp.ActualTemperature> SetTemperature)
+                if (Temp.ActualTemperature> _setTemperature)
                 {
-                    Heat.OnOff = false;
-                    Heat.Interlock = true;
-                    Cool.OnOff = true;
-                    Cool.Interlock = false;
+                    _heat.OnOff = false;
+                    _heat.Interlock = true;
+                    _cool.OnOff = true;
+                    _cool.Interlock = false;
                     Temp.ActualTemperature -= 0.5; //lage dette til en funksjon/variabel med forskjellige faktorer?
                 }
-                if (Temp.ActualTemperature < SetTemperature)
+                if (Temp.ActualTemperature < _setTemperature)
                 {
-                    Heat.OnOff = true;
-                    Heat.Interlock = false;
-                    Cool.OnOff = false;
-                    Cool.Interlock = true;
+                    _heat.OnOff = true;
+                    _heat.Interlock = false;
+                    _cool.OnOff = false;
+                    _cool.Interlock = true;
                     Temp.ActualTemperature += 0.5; //lage dette til en funksjon/variabel med forskjellige faktorer?
                 }
-                if (Math.Abs(Temp.ActualTemperature - SetTemperature) < 0.9)
+                if (Math.Abs(Temp.ActualTemperature - _setTemperature) < 0.9)
                 {
-                    Heat.OnOff = false;
-                    Heat.Interlock = false;
-                    Cool.OnOff = false;
-                    Cool.Interlock = false;
+                    _heat.OnOff = false;
+                    _heat.Interlock = false;
+                    _cool.OnOff = false;
+                    _cool.Interlock = false;
                 }
-               //Task.Delay(1300);
+                await Task.Delay(2000);
               //Thread.Sleep(200);
             }
         }
         
         public async Task PrintRoomInfo()
         {
-            //send herfra til diplay -> med relevant info/alt?
-            Console.Clear();
+          //  Console.Clear();
             Console.WriteLine(@$"
                     Type:{RoomType} State:{State} 
-                    LYS:            Actual: {Lux.ActualLux} -> Wanted: {SetLux} :  Value%: {Light.Value}
-                    Varme:          Actual: {Temp.ActualTemperature} -> Wanted: {SetTemperature} :  ON/OFF: H-{Heat.OnOff}/C-{Cool.OnOff}
+                    LYS:            Actual: {Lux.ActualLux} -> Wanted: {_setLux} :  Value%: {Light.Value}
+                    Varme:          Actual: {Temp.ActualTemperature} -> Wanted: {_setTemperature} :  ON/OFF: H-{_heat.OnOff}/C-{_cool.OnOff}
                     Ventilasjon:    ON/OFF: {Vent.OnOff}");
         }
-        public async Task Printer()
+        
+        internal object PrintControllerInfo()
         {
-            await PrintRoomInfo();
-               // Task.Delay(1300);
+            var occupied = Motion.MotionOpen() ? "YES" : "NO";
+            string Info =
+                $"State: {State} - Temperature: {Temp.GetTemp()}c /{_setTemperature}c - Occupied: {occupied} - Power consumption: ??? Kw / h";
+            return Info;
         }
 
-
-
-
-
+        
     }
 }

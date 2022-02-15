@@ -1,60 +1,91 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BMSutkast1
 {
     public class Floor
     {
-        public int FloorNr;
+        public int FloorNr { get; }
 
         //public Status FloorState;
-        public List<Room> Rooms;
-        private int OfficeCount;
-        private int CubicleCount;
-        private int MingleCount;
+        private readonly List<Room> _rooms;
+        private readonly int _officeCount;
+        private readonly int _cubicleCount;
+        private readonly int _mingleCount;
         public Status State;
-        public Floor(int floorNr)
+        protected internal Floor(int floorNr)
         {
             State = Status.Sleep;
             FloorNr = floorNr;
             
             //FloorState = Status.Sleep; ////skal arves (reversert?) fra room, og sende til building
-            Rooms = new List<Room>();
+            _rooms = new List<Room>();
 
-            OfficeCount = 10; //fåes som parameter i new floor?
-            CubicleCount = 5; // fåes som parameter i new floor?
-            MingleCount = 2; // fåes som parameter i new floor?
-            CreateOffices(OfficeCount);
-            CreateCubicles(CubicleCount);
-            CreateMingle(MingleCount);
-            CreateReseption();
+            _officeCount = 10; //fåes som parameter i new floor?
+            _cubicleCount = 5; // fåes som parameter i new floor?
+            _mingleCount = 2; // fåes som parameter i new floor?
+            CreateOffices(_officeCount);
+            CreateCubicles(_cubicleCount);
+            CreateMingle(_mingleCount);
+            CreateReception();
 
         }
-
-        private void CreateReseption()
-        {
-            if (FloorNr == 1) Rooms.Add(new Reception(10, 1, FloorNr));
-        }
-
-
         private void CreateOffices(int officeCount)
         {
             for (int i = 0; i < officeCount; i++)
             {
-                Rooms.Add(new Office(6, i, FloorNr)); //6m2 minimum
+                _rooms.Add(new Office(6, _rooms.Count+1, FloorNr)); //6m2 minimum
             }
         }
         private void CreateCubicles(int cubicleCount)
         {
             for (int i = 0; i < cubicleCount; i++)
             {
-                Rooms.Add(new Cubicle(50, i, FloorNr));
+                _rooms.Add(new Cubicle(50, _rooms.Count+1, FloorNr));
             }
         }
         private void CreateMingle(int mingleCount)
         {
             for (int i = 0; i < mingleCount; i++)
             {
-                Rooms.Add(new Mingle(30, i, FloorNr));
+                _rooms.Add(new Mingle(30, _rooms.Count+1, FloorNr));
+            }
+        }
+        private void CreateReception()
+        {
+            if (FloorNr == 1) _rooms.Add(new Reception(10, _rooms.Count + 1, FloorNr));
+        }
+
+        public void PrintFloorInfo()
+        {
+            Console.WriteLine($"Floor: {FloorNr} - State: {State} - Rooms: {_rooms.Count}");
+        }
+
+        public void PrintRoomOverview()
+        {
+            foreach (var room in _rooms)
+            {
+                room.PrintRoomInfo();
+            }
+        }
+        public int GetRoomCount()
+        {
+            return _rooms.Count;
+        }
+
+        public Room GetRoom(int roomNr)
+        {
+            return _rooms.Find(x => x.RoomNr == roomNr);
+        }
+
+        public async Task ChangeState(Status state)
+        {
+            State = state;
+            foreach (var room in _rooms)
+            {
+                if (State == Status.Sleep) await room.ChangeState(State);
+                else await room.ChangeState(Status.Standby);  //Hindre at alle rom blir satt til awake - må gjøres manuelt
             }
         }
     }

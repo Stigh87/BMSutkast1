@@ -16,5 +16,10 @@ namespace BMSutkast1.Sensor
             Type = "TempSensor";
             ActualTemperature = 15; //startverdi
         }
+
+        public double GetTemp()
+        {
+            return ActualTemperature;
+        }
     }
 }

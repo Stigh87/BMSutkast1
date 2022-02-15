@@ -17,6 +17,7 @@ namespace BMSutkast1
          * Sette opp "people" som random (rooms.count/2, rooms.count) -> "findAvaliableOffice()?" man-fredag 8-4
          *                                                                Kommer og går?() / simulere bevegelse i bygg
          *
+         * Objekter i liste med: tid, lys/lux, temp som liste i et dags objekt?
          */
     }
 }

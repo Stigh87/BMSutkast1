@@ -27,150 +27,134 @@ namespace BMSutkast1
         {
             Console.WriteLine();
         }
-
-        public void MainMenu()
+        private static int GetInput()
+        {
+           // var input = Convert.ToInt32(Console.ReadKey(true).KeyChar);
+            var input = int.Parse(Console.ReadKey(true).KeyChar.ToString());
+            Clear();
+            return input;
+        }
+        private static void Clear()
+        {
+            Console.Clear();
+        }
+        public async Task MainMenu()
         {
             Console.WriteLine($"BUILDING MANAGEMENT SYSTEM - SIMULATOR");
             Console.WriteLine($"1. Building");
             Console.WriteLine($"2. Floors");
             Console.WriteLine($"3. Weather");
             Console.WriteLine($"4. Calendar");
-            var command = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine(command);
+            var command = GetInput();
             if (command == 1) ;
-            else if (command == 2) PrintFloorsMenu();
+            else if (command == 2) await PrintFloorsMenu();
             else if (command == 3) ;
             else if (command == 4) ;
             else
             {
-                Console.Clear();
                 MainMenu();
             }
         }
 
-        private void PrintFloorsMenu()
+        private async Task PrintFloorsMenu()
         {
-            foreach (var floor in MyBuilding.Floors)
+            while (true)
             {
-                Console.WriteLine($"Floor: {floor.FloorNr} - State: {floor.State} - Rooms: {floor.Rooms.Count}");
-            }
+                MyBuilding.PrintFloorsOverview();
 
-            Console.WriteLine($"Choose a floor number to access options. Press '0' to go back");
-            var command = Convert.ToInt32(Console.ReadLine());
+                Console.WriteLine($"Choose a floor number to access its options. Press '0' to go back");
+                var command = GetInput();
 
-            if (command == 0)
-            {
-                Console.Clear();
-                MainMenu();
-            }
-            else if (1 <= command && command <= 4)
-            {
-                var floorIndex = MyBuilding.Floors.FindIndex(x => x.FloorNr == command);
-                PrintFloorMenu(floorIndex);
-            }
-            else
-            {
-                Console.Clear();
-                PrintFloorsMenu();
+                if (command == 0)
+                {
+                    await MainMenu();
+                }
+                else if (1 <= command && command <= MyBuilding.GetFloorCount())
+                {
+                    var floor = MyBuilding.GetFloor(command);
+                    await PrintFloorMenu(floor);
+                }
+                else
+                {
+                    continue;
+                   // Clear();
+                   // await PrintFloorsMenu();
+                }
+                break;
             }
         }
 
-        private async Task PrintFloorMenu(int floorIndex)
+        private async Task PrintFloorMenu(Floor floor)
         {
-            var i = 1;
-            var floor = MyBuilding.Floors[floorIndex];
-            Console.WriteLine($"Floor number: {floor.FloorNr} - State: {floor.State}");
-            foreach (var room in floor.Rooms)
-            {
-                var c = room.Controller;
-                string occupied = c.Motion.Open ? "YES" : "NO";
-                Console.WriteLine(
-                    $"Nr: {i} - Type: {room.RoomType}({room.Area}m2) - State: {c.State} - Temperature: {c.Temp.ActualTemperature}c/{c.SetTemperature}c - Occupied: {occupied} - Power consumption: ???Kw/h");
-                i++;
-            }
-
-            Console.WriteLine($"1. Room options - 2. to change floor state(temp) - 0. to go back,");
-            var command = Convert.ToInt32(Console.ReadLine());
-            if (command == 0) PrintFloorsMenu();
-            else if (command == 2) FloorStateChanger(floorIndex);
+            floor.PrintFloorInfo();
+            Console.WriteLine($"1. Room options - 2. change floor state - 3. Set temperature - 0. to go back,");
+            var command = GetInput();
+            if (command == 0) await PrintFloorsMenu();
+            else if (command == 2) await FloorStateChanger(floor);
             else if (command == 1)
             {
-                Console.WriteLine($"Choose a room number to access options.");
-                command = Convert.ToInt32(Console.ReadLine());
-                if (1 <= command && command <= floor.Rooms.Count) PrintRoomOptions(floorIndex, command);
+                floor.PrintRoomOverview();
+                Console.WriteLine($"Choose a room number to access options (1 - {floor.GetRoomCount()}) - 0. to go back");
+                command = GetInput();
+                if (1 <= command && command <= floor.GetRoomCount()) await PrintRoomOptions(floor, command);
+                else await PrintFloorMenu(floor);
             }
         }
 
-        private async Task PrintRoomOptions(int floorIndex, int RoomNr)
+        private async Task PrintRoomOptions(Floor floor, int roomNr)
         {
-            var roomIndex = RoomNr - 1;
-            var roomController = MyBuilding.Floors[floorIndex].Rooms[roomIndex].Controller;
-            await roomController.Printer();
-            Console.WriteLine($"1. Change state - 2. SetTemp - 3. SetLux - '0' to go back");
-            var command = Convert.ToInt32(Console.ReadLine());
-            if (command == 0) await PrintFloorMenu(floorIndex);
-            if (command == 1) await RoomStateChanger(floorIndex, roomIndex);
+            var room = floor.GetRoom(roomNr);
+            var controller = room.GetController();
+            floor.PrintFloorInfo();
+            await controller.PrintRoomInfo();
+            Console.WriteLine($"\n 1. Change state - 2. SetTemp - 3. SetLux - 4. Refresh View- '0' to go back");
+            var command = GetInput();
+            if (command == 0) await PrintFloorMenu(floor);
+            if (command == 1) await ChangeRoomState(floor, room);
             if (command == 2) ChangeRoomSetValue("Temp"); //settemp aktuelt rom
             if (command == 3) ChangeRoomSetValue("Lux"); //setLux aktuelt rom
-
+            if (command == 4) PrintRoomOptions(floor, roomNr);
+        }
+        private async Task ChangeRoomState(Floor floor, Room room)
+        {
+            StatusExtraction.PrintStatusOptions();
+            var state = StateChanger(room.GetRoomState());
+            if (state == Status.Awake)
+            {
+                MyBuilding.ChangeState(state);
+                floor.ChangeState(state);
+            }
+            await room.ChangeState(state);
+            await PrintRoomOptions(floor, room.RoomNr);
         }
 
         private void ChangeRoomSetValue(string type)
         {
-            //lux eller temp <--------------------------Fortsett her
+            //lux eller temp <--------------------------Fortsett her + evt. sjekke StateChanger (Rom>etasje>bygg? eller andre veien?)
         }
 
-        private async Task RoomStateChanger(int floorIndex, int roomIndex)
+        private async Task FloorStateChanger(Floor floor)
         {
-            var floor = MyBuilding.Floors[floorIndex];
-            var room = floor.Rooms[roomIndex];
-            Console.WriteLine();
-            Console.WriteLine($"Room: {room.RoomType}{roomIndex+1} - Current State: {room.Controller.State}");
-            Console.WriteLine(
-                $"1. {Status.Awake} - 2. {Status.Standby} - 3. {Status.Sleep} - 4. {Status.Wakeup}, '0' to go back");
-            var command = Convert.ToInt32(Console.ReadLine());
-            var state = StateChanger(command);
-            await RoomState(room, state);
-            floor.State = state;
-            await PrintRoomOptions(floorIndex, roomIndex +1);
+            floor.PrintFloorInfo();
+            StatusExtraction.PrintStatusOptions();
+            var state = StateChanger(floor.State);
+            await floor.ChangeState(state);
+            await PrintFloorMenu(floor);
         }
 
-        private async Task RoomState(Room room, Status state)
+        private Status StateChanger(Status state)
         {
-            room.Controller.State = state;
-            await room.Controller.ChangeState();
-        }
-
-        private async Task FloorStateChanger(int floorIndex)
-        {
-            var floor = MyBuilding.Floors[floorIndex];
-            Console.WriteLine($"Floor number: {floor.FloorNr} - Current State: {floor.State}");
-            Console.WriteLine(
-                $"1. {Status.Awake} - 2. {Status.Standby} - 3. {Status.Sleep} - 4. {Status.Wakeup}, '0' to go back");
-            var command = Convert.ToInt32(Console.ReadLine());
-            if (command == 0) await PrintFloorMenu(floorIndex);
-            var state = StateChanger(command);
-            floor.State = state;
-            foreach (var room in floor.Rooms)
-            {
-                await RoomState(room, state);
-            }
-            await PrintFloorMenu(floorIndex);
-        }
-
-        private Status StateChanger(int command)
-        {
-            var state = command switch
+            var command = GetInput();
+            state = command switch
             {
                 1 => Status.Awake,
                 2 => Status.Standby,
                 3 => Status.Sleep,
-                _ => Status.Wakeup
+                4 => Status.Wakeup,
+                _ => state
             };
             return state;
         }
-
-
     }
 }
 

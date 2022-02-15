@@ -9,35 +9,48 @@ namespace BMSutkast1
 {
     public class Building
     {
-
-        public List<Floor> Floors;
-        public Display Display;
+        private readonly List<Floor> _floors;
         public Status State;
 
         public int PowerConsumption;
 
         public Building()
         {
-
             State = Status.Sleep; //skal arves (reversert) fra floor
-            Floors = new List<Floor>
+            _floors = new List<Floor>
             {
-                new Floor(1),
-                new Floor(2),
-                new Floor(3)
+                new(1),
+                new(2),
+                new(3)
             };
         }
-
-        public void WakeBuilding()
+        public void PrintFloorsOverview()
         {
-            State = Status.Wakeup;
-            foreach (var floor in Floors)
+            foreach (var floor in _floors)
             {
-                floor.State = Status.Wakeup;
+                floor.PrintFloorInfo();
+            }
+        }
+
+        public int GetFloorCount()
+        {
+            return _floors.Count;
+        }
+
+        public Floor GetFloor(int command)
+        {
+            var floorIndex = _floors.FindIndex(x => x.FloorNr == command);
+            return _floors[floorIndex];
+        }
+
+        public async Task ChangeState(Status state)
+        {
+            State = state;
+            foreach (var floor in _floors)
+            {
+                if(State == Status.Awake) await floor.ChangeState(Status.Wakeup);
+                else await floor.ChangeState(State);
             }
         }
     }
-    
-
-    
 }

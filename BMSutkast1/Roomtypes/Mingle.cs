@@ -2,7 +2,7 @@
 {
     internal class Mingle : Room
     {
-        public Mingle(int area, int roomIndex, int floorNr) : base(area, roomIndex, floorNr)
+        public Mingle(int area, int roomNr, int floorNr) : base(area, roomNr, floorNr)
         {
             RoomType = "Mingle";
         }

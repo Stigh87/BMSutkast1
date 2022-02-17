@@ -8,8 +8,8 @@ namespace BMSutkast1.Sensor
 {
     public class ValueSensor : Sensor
     {
-        public double ActualValue;
-        public double SetValue;
+        protected double ActualValue;
+        protected double SetValue;
         public ValueSensor(Guid ControllerId) : base(ControllerId)
         {
             ActualValue = 0.0;
@@ -17,10 +17,6 @@ namespace BMSutkast1.Sensor
         }
 
 
-        public void ChangeValue(double newValue)
-        {
-            SetValue = newValue;
-            //send "beskjed" til romcontroller ??
-        }
+        
     }
 }

@@ -8,11 +8,7 @@ namespace BMSutkast1
     {
         public int FloorNr { get; }
 
-        //public Status FloorState;
         private readonly List<Room> _rooms;
-        private readonly int _officeCount;
-        private readonly int _cubicleCount;
-        private readonly int _mingleCount;
         public Status State;
         protected internal Floor(int floorNr)
         {
@@ -21,19 +17,18 @@ namespace BMSutkast1
             
             //FloorState = Status.Sleep; ////skal arves (reversert?) fra room, og sende til building
             _rooms = new List<Room>();
-
-            _officeCount = 10; //fåes som parameter i new floor?
-            _cubicleCount = 5; // fåes som parameter i new floor?
-            _mingleCount = 2; // fåes som parameter i new floor?
-            CreateOffices(_officeCount);
-            CreateCubicles(_cubicleCount);
-            CreateMingle(_mingleCount);
+            const int officeCount = 10; //Hjelpevariabler for oppretting av rom <-- legges i constructor om en ønsker annen str. bygg
+            const int cubicleCount = 5;
+            const int mingleCount = 2;
+            CreateOffices(officeCount);
+            CreateCubicles(cubicleCount);
+            CreateMingle(mingleCount);
             CreateReception();
 
         }
         private void CreateOffices(int officeCount)
         {
-            for (int i = 0; i < officeCount; i++)
+            for (var i = 0; i < officeCount; i++)
             {
                 _rooms.Add(new Office(6, _rooms.Count+1, FloorNr)); //6m2 minimum
             }
@@ -87,6 +82,11 @@ namespace BMSutkast1
                 if (State == Status.Sleep) await room.ChangeState(State);
                 else await room.ChangeState(Status.Standby);  //Hindre at alle rom blir satt til awake - må gjøres manuelt
             }
+        }
+
+        public int GetFloorNr()
+        {
+            return FloorNr;
         }
     }
 }

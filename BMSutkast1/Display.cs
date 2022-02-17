@@ -23,9 +23,11 @@ namespace BMSutkast1
          */
         public Building MyBuilding = new Building();
 
-        private void DisplayPrint()
+        private async Task DisplayPrint()
         {
-            Console.WriteLine();
+            var calendar = MyBuilding.Calendar; //funksjon getCalendar()?
+            await calendar.StartWeek();
+
         }
         private static int GetInput()
         {
@@ -46,13 +48,28 @@ namespace BMSutkast1
             Console.WriteLine($"3. Weather");
             Console.WriteLine($"4. Calendar");
             var command = GetInput();
-            if (command == 1) ;
+            if (command == 1) PrintBuildingMenu();
             else if (command == 2) await PrintFloorsMenu();
             else if (command == 3) ;
-            else if (command == 4) ;
+            else if (command == 4) DisplayPrint();
             else
             {
                 MainMenu();
+            }
+        }
+
+        private void PrintBuildingMenu()
+        {
+            MyBuilding.PrintBuildingOverview();
+            Console.WriteLine($"\n 1. Floor options - 2. Change building state - 0. To go back,");
+            var command = GetInput();
+            if (command == 0) MainMenu();
+            if (command == 1) PrintFloorsMenu();
+            if (command == 2)
+            {
+                var state = StateChanger(MyBuilding.State);
+                MyBuilding.ChangeState(state);
+                PrintBuildingMenu();   //While loop heller?
             }
         }
 
@@ -61,25 +78,16 @@ namespace BMSutkast1
             while (true)
             {
                 MyBuilding.PrintFloorsOverview();
-
                 Console.WriteLine($"Choose a floor number to access its options. Press '0' to go back");
                 var command = GetInput();
 
-                if (command == 0)
-                {
-                    await MainMenu();
-                }
+                if (command == 0) await MainMenu();
                 else if (1 <= command && command <= MyBuilding.GetFloorCount())
                 {
                     var floor = MyBuilding.GetFloor(command);
                     await PrintFloorMenu(floor);
                 }
-                else
-                {
-                    continue;
-                   // Clear();
-                   // await PrintFloorsMenu();
-                }
+                else continue;
                 break;
             }
         }
@@ -111,13 +119,13 @@ namespace BMSutkast1
             var command = GetInput();
             if (command == 0) await PrintFloorMenu(floor);
             if (command == 1) await ChangeRoomState(floor, room);
-            if (command == 2) ChangeRoomSetValue("Temp"); //settemp aktuelt rom
-            if (command == 3) ChangeRoomSetValue("Lux"); //setLux aktuelt rom
-            if (command == 4) PrintRoomOptions(floor, roomNr);
+            if (command == 2) ChangeRoomSetValue("Temp", room); //settemp aktuelt rom
+            if (command == 3) ChangeRoomSetValue("Lux", room); //setLux aktuelt rom
+            //if (command == 4) PrintRoomOptions(floor, roomNr);
+            PrintRoomOptions(floor, roomNr); //Legge en while-loop rundt heller?
         }
         private async Task ChangeRoomState(Floor floor, Room room)
         {
-            StatusExtraction.PrintStatusOptions();
             var state = StateChanger(room.GetRoomState());
             if (state == Status.Awake)
             {
@@ -128,15 +136,20 @@ namespace BMSutkast1
             await PrintRoomOptions(floor, room.RoomNr);
         }
 
-        private void ChangeRoomSetValue(string type)
+        private void ChangeRoomSetValue(string type, Room room)
         {
-            //lux eller temp <--------------------------Fortsett her + evt. sjekke StateChanger (Rom>etasje>bygg? eller andre veien?)
+            room.PrintRoomInfo();
+            Console.WriteLine($"\n 1. Set new value - '0' to go back");
+            var value = int.Parse(Console.ReadLine());
+            var controller = room.GetController();
+            controller.ChangeSetValue(type, value);
+           
+            // <--------------------------Fortsett her + evt. sjekke StateChanger (Rom>etasje>bygg? eller andre veien?)
         }
 
         private async Task FloorStateChanger(Floor floor)
         {
             floor.PrintFloorInfo();
-            StatusExtraction.PrintStatusOptions();
             var state = StateChanger(floor.State);
             await floor.ChangeState(state);
             await PrintFloorMenu(floor);
@@ -144,6 +157,7 @@ namespace BMSutkast1
 
         private Status StateChanger(Status state)
         {
+            StatusExtraction.PrintStatusOptions(state);
             var command = GetInput();
             state = command switch
             {

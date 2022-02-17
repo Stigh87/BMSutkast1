@@ -50,6 +50,7 @@ namespace BMSutkast1
         //      ELLER SELVE ROOM.SYCKLUS I EN WHILE?
 
         // noen "steg" i temp fra metode- det blir fortere kaldt / varmt med høye/lave temp
+        
     }
 
 }

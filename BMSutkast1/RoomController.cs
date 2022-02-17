@@ -89,9 +89,9 @@ namespace BMSutkast1
 
         private async Task AdjustVentilation()
         {
-            if (State == Status.Awake) Vent.OnOff = true;
+            if (State == Status.Awake) Vent.On = true;
             if (State == Status.Standby) ; //timer 10min så ventOff
-            if(State == Status.Sleep) Vent.OnOff = false;
+            if(State == Status.Sleep) Vent.On = false;
             if (State == Status.Wakeup) ; //timer 10min så ventOff, om ikke awake fra motion.
 
         }
@@ -106,65 +106,92 @@ namespace BMSutkast1
                 }
                 if (Lux.ActualLux < _setLux)
                 {
-                    Light.OnOff = true;
+                    Light.On = true;
                     Light.Value += 5;
                     Lux.ActualLux += 50;
                 }
-                Light.OnOff = Lux.ActualLux != 0;
+                Light.On = Lux.ActualLux != 0;
                await Task.Delay(1000);
             }
         }
 
         internal async Task AdjustTemperature()
         {
-            while (Math.Abs(Temp.ActualTemperature - _setTemperature) > 0.1)
+            while (Math.Abs(Temp.GetTemp() - _setTemperature) > 0.1)
             {
-                if (Temp.ActualTemperature> _setTemperature)
+                if (Temp.GetTemp() > _setTemperature) //
                 {
-                    _heat.OnOff = false;
-                    _heat.Interlock = true;
-                    _cool.OnOff = true;
-                    _cool.Interlock = false;
-                    Temp.ActualTemperature -= 0.5; //lage dette til en funksjon/variabel med forskjellige faktorer?
+                    SwitchCooling();
                 }
-                if (Temp.ActualTemperature < _setTemperature)
+                if (Temp.GetTemp() < _setTemperature)
                 {
-                    _heat.OnOff = true;
-                    _heat.Interlock = false;
-                    _cool.OnOff = false;
-                    _cool.Interlock = true;
-                    Temp.ActualTemperature += 0.5; //lage dette til en funksjon/variabel med forskjellige faktorer?
+                    SwitchHeating();
                 }
-                if (Math.Abs(Temp.ActualTemperature - _setTemperature) < 0.9)
+                if (Math.Abs(Temp.GetTemp() - _setTemperature) < 0.9) //"Delay" i ovn/kjøler 
                 {
-                    _heat.OnOff = false;
+                    _heat.On = false;
                     _heat.Interlock = false;
-                    _cool.OnOff = false;
+                    _cool.On = false;
                     _cool.Interlock = false;
                 }
-                await Task.Delay(2000);
+                await Task.Delay(2000); //tid regnes ut og hentes fra klokke/kalender.
               //Thread.Sleep(200);
             }
         }
-        
+
+        private void SwitchHeating()
+        {
+            _heat.On = true;
+            _heat.Interlock = false;
+            _cool.On = false;
+            _cool.Interlock = true;
+            Temp.AdjustTemperature(_heat.Interlock, _cool.Interlock);
+            //Temp.ActualTemperature += 0.3; //lage dette til en funksjon/variabel med forskjellige faktorer?
+        }
+
+        private void SwitchCooling()
+        {
+            //må legges inn en "stopper" så ikke cooling går på om utendørstemp < innendørs/ønsket
+            _heat.On = false;
+            _heat.Interlock = true;
+            _cool.On = true;
+            _cool.Interlock = false;
+            Temp.AdjustTemperature(_heat.Interlock, _cool.Interlock);
+            //Temp.ActualTemperature -= 0.3; //lage dette til en funksjon/variabel med forskjellige faktorer?
+        }
+
         public async Task PrintRoomInfo()
         {
           //  Console.Clear();
-            Console.WriteLine(@$"
+          Console.WriteLine(@$"
                     Type:{RoomType} State:{State} 
                     LYS:            Actual: {Lux.ActualLux} -> Wanted: {_setLux} :  Value%: {Light.Value}
-                    Varme:          Actual: {Temp.ActualTemperature} -> Wanted: {_setTemperature} :  ON/OFF: H-{_heat.OnOff}/C-{_cool.OnOff}
-                    Ventilasjon:    ON/OFF: {Vent.OnOff}");
+                    Varme:          Actual: {Temp.GetTemp()} -> Wanted: {_setTemperature} :  ON/OFF: H-{_heat.On}/C-{_cool.On}
+                    Ventilasjon:    ON/OFF: {Vent.On}");
         }
         
         internal object PrintControllerInfo()
         {
             var occupied = Motion.MotionOpen() ? "YES" : "NO";
-            string Info =
+            string info =
                 $"State: {State} - Temperature: {Temp.GetTemp()}c /{_setTemperature}c - Occupied: {occupied} - Power consumption: ??? Kw / h";
-            return Info;
+            return info;
         }
 
-        
+        public void ChangeSetValue(string type, int value)
+        {
+            if (type == "Lux")
+            {
+                _setLux = value < 1000 ? value : _setLux;
+                AdjustLights();
+            }
+
+            if (type == "Temp")
+            {
+                _setTemperature = value is < 28 and > 15 ? value : _setTemperature;
+                AdjustTemperature();
+            }
+        }
+
     }
 }

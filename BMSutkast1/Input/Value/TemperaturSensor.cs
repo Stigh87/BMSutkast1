@@ -8,18 +8,22 @@ namespace BMSutkast1.Sensor
 {
     public class TemperaturSensor : ValueSensor
     {
-        //public double SetTemperature; //max 22 min 16 <- Lagt i romcontroller
-        
-        public double ActualTemperature; //lage en while loop async Task som kjører 0,1++ 0,1-- avhengig av utendørstemp?
+        protected double ActualTemperature; //lage en while loop async Task som kjører 0,1++ 0,1-- avhengig av utendørstemp?
         public TemperaturSensor(Guid controllerId) : base(controllerId)
         {
             Type = "TempSensor";
-            ActualTemperature = 15; //startverdi
+            ActualTemperature = 15; //startverdi ved new();
         }
 
         public double GetTemp()
         {
-            return ActualTemperature;
+            return Math.Round(ActualTemperature, 2);
+        }
+
+        public void AdjustTemperature(bool heat, bool cool)
+        {
+            var tempChange = heat && !cool ? -0.3 : cool && !heat ? +0.3 : -0.1; //-0.1 om utendørs temp < actual / +0.1 om motsatt?
+            ActualTemperature += tempChange;
         }
     }
 }

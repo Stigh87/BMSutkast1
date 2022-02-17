@@ -10,13 +10,15 @@ namespace BMSutkast1
     public class Building
     {
         private readonly List<Floor> _floors;
+        public Calendar Calendar;
         public Status State;
 
         public int PowerConsumption;
 
         public Building()
         {
-            State = Status.Sleep; //skal arves (reversert) fra floor
+            State = Status.Sleep; 
+            Calendar = new Calendar();
             _floors = new List<Floor>
             {
                 new(1),
@@ -48,9 +50,15 @@ namespace BMSutkast1
             State = state;
             foreach (var floor in _floors)
             {
-                if(State == Status.Awake) await floor.ChangeState(Status.Wakeup);
+                if(State == Status.Awake) await floor.ChangeState(Status.Wakeup); //varme opp etasje for etasje? 1-count
                 else await floor.ChangeState(State);
             }
+        }
+
+        public void PrintBuildingOverview()
+        {
+            var totalRoomCount = _floors.Sum(floor => floor.GetRoomCount());
+            Console.WriteLine($"MyBuilding - State: {State} - Floors: {_floors.Count} - Rooms: {totalRoomCount} - Powerconsumption: ???kw/h");
         }
     }
 }

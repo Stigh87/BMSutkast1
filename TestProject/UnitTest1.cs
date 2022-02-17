@@ -14,8 +14,8 @@ namespace TestProject
         {
             var guid = Guid.NewGuid();
             var controller = new RoomController("Test", guid, 10);
-            var input = new LuxSensor(controller._id);
-            Assert.AreEqual(controller._id, input.RoomControllerId, "GUID ID Check");
+            var input = new LuxSensor(controller.Id);
+            Assert.AreEqual(controller.Id, input.RoomControllerId, "GUID ID Check");
             Assert.AreEqual(0, input.ActualLux, "StartLux when creating");
             Assert.AreEqual(0, input.SetValue, "SetValue on creation");
             Assert.Pass();
@@ -25,8 +25,8 @@ namespace TestProject
         {
             var guid = Guid.NewGuid();
             var controller = new RoomController("Test", guid, 10);
-            var input = new MotionSensor(controller._id);
-            Assert.AreEqual(controller._id, input.RoomControllerId, "GUID ID Check");
+            var input = new MotionSensor(controller.Id);
+            Assert.AreEqual(controller.Id, input.RoomControllerId, "GUID ID Check");
             Assert.AreEqual(false, input.Open, "StartBool");
             input.Timer = 20;
             Assert.AreEqual(20, input.Timer, "Adjusted timer");
@@ -37,9 +37,9 @@ namespace TestProject
         {
             var guid = Guid.NewGuid();
             var controller = new RoomController("Test", guid, 10);
-            var light = new Light(controller._id);
+            var light = new Light(controller.Id);
             Assert.AreEqual(0,light.Value, "StartValue");
-            Assert.AreEqual(false, light.OnOff, "StartBool");
+            Assert.AreEqual(false, light.On, "StartBool");
             Assert.AreEqual(light.Type, "Light", "StartBool");
             Assert.Pass();
         }

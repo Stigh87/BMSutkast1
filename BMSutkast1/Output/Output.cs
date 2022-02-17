@@ -13,14 +13,14 @@ namespace BMSutkast1.Output
         public Guid RoomControllerId;
         public string Type;
 
-        public bool OnOff;
+        public bool On;
 
         public Output(Guid ControllerId)
         {
             RoomControllerId = ControllerId;
             _id = Guid.NewGuid();
             //RoomNr = roomId;
-            OnOff = false;
+            On = false;
         }
 
         //Fellesfunksjon false->true og motsatt();

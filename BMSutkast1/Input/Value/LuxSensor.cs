@@ -14,5 +14,6 @@ namespace BMSutkast1.Sensor
             Type = "LuxSensor";
             ActualLux = 0; //startverdi
         }
+
     }
 }

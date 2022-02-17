@@ -9,12 +9,12 @@ namespace BMSutkast1.Output
     public class Cooling : Output
     {
         public bool Interlock;
-       // public bool OnOff;
+       // public bool On;
         public Cooling(Guid ControllerId) : base(ControllerId)
         {
             Type = "Cooling";
             Interlock = false; // "Forigling mot heating" <-
-           // OnOff = false;
+           // On = false;
         }
     }
 }

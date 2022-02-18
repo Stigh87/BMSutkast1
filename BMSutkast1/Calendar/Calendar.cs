@@ -55,14 +55,23 @@ namespace BMSutkast1
             var running = true;
             while (running)
             {
-                Console.WriteLine($"****{CurrentDay.GetDayName()}****");
+               // Console.WriteLine($"****{CurrentDay.GetDayName()}****");
                 await CurrentDay.StartDay();
                 DayChanger();
-                //Task.Delay(2000);
-                Thread.Sleep(3500);
+                await Task.Delay(15000);
+                //Thread.Sleep(3500);
             }
 
+        }
 
+        public string GetCalendarInfo(string wantedInfo)
+        {
+            if (wantedInfo == "CurrentDay") return GetCurrentDay().GetDayName();
+            if (wantedInfo == "currentTime") return CurrentDay.PrintCurrentHour();
+            if (wantedInfo == "temperature") return CurrentDay.GetCurrentHour().GetTemp().ToString();
+            if (wantedInfo == "lux") return CurrentDay.GetCurrentHour().GetLux().ToString();
+            if (wantedInfo == "workingHours") return CurrentDay.PrintWorkingHours();
+            return " ";
         }
 
     }

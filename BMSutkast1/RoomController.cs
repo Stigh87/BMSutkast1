@@ -165,8 +165,8 @@ namespace BMSutkast1
           //  Console.Clear();
           Console.WriteLine(@$"
                     Type:{RoomType} State:{State} 
-                    LYS:            Actual: {Lux.ActualLux} -> Wanted: {_setLux} :  Value%: {Light.Value}
-                    Varme:          Actual: {Temp.GetTemp()} -> Wanted: {_setTemperature} :  ON/OFF: H-{_heat.On}/C-{_cool.On}
+                    LYS:            Actual: {Lux.ActualLux}     -> Wanted: {_setLux}            :  Value%: {Light.Value}
+                    Varme:          Actual: {Temp.GetTemp()}c   -> Wanted: {_setTemperature}c   :  ON/OFF: H-{_heat.On}/C-{_cool.On}
                     Ventilasjon:    ON/OFF: {Vent.On}");
         }
         

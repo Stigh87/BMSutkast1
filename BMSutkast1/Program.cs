@@ -13,7 +13,7 @@ namespace BMSutkast1
         static async Task Main(string[] args)
         {
             var display = new Display();
-            display.MainMenu();
+            await display.MainMenu();
             
             //var room = new Office(6,1,1);
             //room.PrintRoomInfo();

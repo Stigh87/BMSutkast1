@@ -28,9 +28,10 @@ namespace BMSutkast1
         }
         public void PrintFloorsOverview()
         {
+            PrintCalendarOverview();
             foreach (var floor in _floors)
             {
-                floor.PrintFloorInfo();
+                PrintFloorInfo(floor);
             }
         }
 
@@ -58,7 +59,28 @@ namespace BMSutkast1
         public void PrintBuildingOverview()
         {
             var totalRoomCount = _floors.Sum(floor => floor.GetRoomCount());
-            Console.WriteLine($"MyBuilding - State: {State} - Floors: {_floors.Count} - Rooms: {totalRoomCount} - Powerconsumption: ???kw/h");
+            PrintCalendarOverview();
+            Console.WriteLine(@$"
+                    MyBuilding - State: {State} - Floors: {_floors.Count} - Rooms: {totalRoomCount} - Powerconsumption: ???kw/h");
+                    
+        }
+
+        public void PrintFloorInfo(Floor floor)
+        {
+            floor.PrintFloorInfo();
+            
+        }
+
+        public void PrintCalendarOverview()
+        {
+            Console.WriteLine(@$"
+                    Day: { Calendar.GetCalendarInfo("CurrentDay")} - Time: { Calendar.GetCalendarInfo("currentTime")} - Working Hours: { Calendar.GetCalendarInfo("workingHours")}
+                    Outdoortemp: { Calendar.GetCalendarInfo("temperature")}c - Outdoor Lux: {Calendar.GetCalendarInfo("lux")}");
+        }
+
+        public void StartWeek()
+        {
+            Calendar.StartWeek();
         }
     }
 }

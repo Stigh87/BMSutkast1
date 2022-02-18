@@ -27,9 +27,9 @@ namespace BMSutkast1.Input
             for (var i = 0; i < _forecasts.Length; i++)
             {
                 if (i is >= 0 and < 8) Night();
-                if (i is >= 8 and < 11) Sunrise();
+                if (i is >= 8 and < 11) Sunrise(); //man-fre wakeup
                 if (i is >= 11 and < 16) MidDay();
-                if (i is >= 16 and < 21) Sunset();
+                if (i is >= 16 and < 21) Sunset(); //man-fre gotosleep
                 if (i is >= 21 and < 24) Night();
                 _forecasts[i] = new Forecast(Temp, Lux);
             }
@@ -43,7 +43,7 @@ namespace BMSutkast1.Input
         private void Sunset()
         {
             Temp -= 2;
-            Lux -= 10000; 
+            Lux -= 10000;
         }
         private void MidDay()
         {

@@ -14,8 +14,8 @@ namespace BMSutkast1
         private readonly Hour[] Hours;
         private int CurrentHourIndex;
         private Hour CurrentHour;
-        private int WorkHourStart;
-        private int WorkHourEnd;
+        protected int WorkHourStart;
+        protected int WorkHourEnd;
         private int DayIndex;
         private WeatherStation _weatherstation;
 
@@ -37,8 +37,7 @@ namespace BMSutkast1
         {
             for (int i = 0; i < Hours.Length; i++)
             {
-                //value = time, getLux(), getTemp() <-- fra weatherfoorecast?
-                Hours[i] = new Hour(i, CheckWorkTime(i), getForecast(i)); //<----------TESTVERDIER
+                Hours[i] = new Hour(i, CheckWorkTime(i), getForecast(i)); 
             }
         }
 
@@ -58,6 +57,8 @@ namespace BMSutkast1
         {
             return Hours[CurrentHourIndex];
         }
+
+   
 
         public void HourChanger()
         {
@@ -79,12 +80,32 @@ namespace BMSutkast1
         {
             foreach (var hour in Hours)
             {
-                Console.WriteLine($"{hour.Value} - Lux: {hour.GetLux()} - Temp: {hour.GetTemp()}");
+               // Console.WriteLine($"{hour.Value} - Lux: {hour.GetLux()} - Temp: {hour.GetTemp()}");
                 HourChanger();
-                //Task.Delay(1000);
-                Thread.Sleep(500);
+                await Task.Delay(5000);
+                //Thread.Sleep(500);
             }
         }
 
+        internal string ConvertToString(int time)
+        {
+            var timeString = time.ToString();
+            var pad = 2 - timeString.Length;
+            return timeString.PadLeft(2, '0');
+        }
+
+        internal string PrintWorkingHours()
+        {
+            var hourStart = WorkHourStart;
+            var hourEnd = WorkHourEnd;
+            var hourString = ConvertToString(hourStart) +":00" + " - " + ConvertToString(hourEnd) + ":00";
+            return hourString;
+        }
+        internal string PrintCurrentHour()
+        {
+            var hour = GetCurrentHour().Value;
+            var hourString = ConvertToString(hour);
+            return hourString + ":00";
+        }
     }
 }

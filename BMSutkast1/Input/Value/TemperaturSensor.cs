@@ -20,9 +20,10 @@ namespace BMSutkast1.Sensor
             return Math.Round(ActualTemperature, 2);
         }
 
-        public void AdjustTemperature(bool heat, bool cool)
-        {
-            var tempChange = heat && !cool ? -0.3 : cool && !heat ? +0.3 : -0.1; //-0.1 om utendørs temp < actual / +0.1 om motsatt?
+        public void AdjustTemperature(bool heatInterlock, bool coolInterlock)
+        {   
+            var tempChange = heatInterlock && !coolInterlock ? -0.3 : coolInterlock && !heatInterlock ? +0.3 : -0.1; //-0.1 om utendørs temp < actual / +0.1 om motsatt?
+            
             ActualTemperature += tempChange;
         }
     }

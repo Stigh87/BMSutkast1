@@ -54,11 +54,24 @@ namespace BMSutkast1
 
         public void PrintFloorInfo()
         {
-            Console.WriteLine($"Floor: {FloorNr} - State: {State} - Rooms: {_rooms.Count}");
+            //avg temp? 
+            
+            Console.WriteLine(@$"
+                    Floor number: {FloorNr} - Current State: {State} - Rooms: {_rooms.Count} - Powerconsumption: ???kw/h");
         }
 
-        public void PrintRoomOverview()
+       /* {
+            //  Console.Clear();
+            Console.WriteLine(@$"
+                    Type:{RoomType} State:{State} 
+                    LYS:            Actual: {Lux.ActualLux} -> Wanted: {_setLux} :  Value%: {Light.Value}
+                    Varme:          Actual: {Temp.GetTemp()} -> Wanted: {_setTemperature} :  ON/OFF: H-{_heat.On}/C-{_cool.On}
+                    Ventilasjon:    ON/OFF: {Vent.On}");
+        }*/
+
+    public void PrintRoomOverview()
         {
+            Console.WriteLine("\n");
             foreach (var room in _rooms)
             {
                 room.PrintRoomInfo();

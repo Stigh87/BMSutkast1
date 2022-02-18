@@ -162,9 +162,8 @@ namespace BMSutkast1
 
         public async Task PrintRoomInfo()
         {
-          //  Console.Clear();
           Console.WriteLine(@$"
-                    Type:{RoomType} State:{State} 
+                    Type: {RoomType} State: {State} 
                     LYS:            Actual: {Lux.ActualLux}     -> Wanted: {_setLux}            :  Value%: {Light.Value}
                     Varme:          Actual: {Temp.GetTemp()}c   -> Wanted: {_setTemperature}c   :  ON/OFF: H-{_heat.On}/C-{_cool.On}
                     Ventilasjon:    ON/OFF: {Vent.On}");

@@ -54,6 +54,7 @@ namespace BMSutkast1
             if (command == 1) PrintFloorsMenu();
             if (command == 2)
             {
+                MyBuilding.PrintBuildingOverview();
                 var state = StateChanger(MyBuilding.State);
                 MyBuilding.ChangeState(state);
                 PrintBuildingMenu();   //While loop heller?
@@ -119,6 +120,9 @@ namespace BMSutkast1
         }
         private async Task ChangeRoomState(Floor floor, Room room)
         {
+            MyBuilding.PrintCalendarOverview();
+            floor.PrintFloorInfo();
+            room.GetController().PrintRoomInfo();
             var state = StateChanger(room.GetRoomState());
             if (state == Status.Awake)
             {
@@ -148,6 +152,7 @@ namespace BMSutkast1
 
         private async Task FloorStateChanger(Floor floor)
         {
+            MyBuilding.PrintCalendarOverview();
             MyBuilding.PrintFloorInfo(floor);
             var state = StateChanger(floor.State);
             await floor.ChangeState(state);

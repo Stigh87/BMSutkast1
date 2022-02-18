@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using BMSutkast1.Sensor;
@@ -28,7 +29,9 @@ namespace BMSutkast1
         }
         public void PrintRoomInfo()
         {
-            Console.WriteLine($"Nr: {RoomNr} - Type: {RoomType}({Area}m2) - {Controller.PrintControllerInfo()}");
+
+            var roomtypeAndArea = Convert.ToString($"{RoomType}({Area}m2)");
+            Console.WriteLine($"Nr: {RoomNr.ToString().PadLeft(2, ' ')}  Type: {roomtypeAndArea.PadRight(15, ' ')}  {Controller.PrintControllerInfo()}");
         }
         public RoomController GetController()
         {

@@ -10,7 +10,7 @@ namespace BMSutkast1
     {
         public static void PrintStatusOptions(Status state)
         {
-            Console.WriteLine($"Current state: {state} \n 1. {Status.Awake} - 2. {Status.Standby} - 3. {Status.Sleep} - 4. {Status.Wakeup}, '0' to go back");
+            Console.WriteLine($"\n 1. {Status.Awake} - 2. {Status.Standby} - 3. {Status.Sleep} - 4. {Status.Wakeup}, '0' to go back");
         }
     }
 }

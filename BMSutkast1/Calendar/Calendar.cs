@@ -9,17 +9,6 @@ namespace BMSutkast1
 {
     public class Calendar
     {
-        /*Sette opp kalender
-         *  ukeplan?
-         *  mndplan?
-         *  dags syklus
-         *  været? hhv temp og lys
-         *
-         * Sette opp "people" som random (rooms.count/2, rooms.count) -> "findAvaliableOffice()?" man-fredag 8-4
-         *                                                                Kommer og går?() / simulere bevegelse i bygg
-         *
-         * Objekter i liste med: tid, lys/lux, temp som liste i et dags objekt?
-         */
         private Day[] Week { get; }
         private Day CurrentDay;
         private int CurrentDayIndex;
@@ -50,18 +39,16 @@ namespace BMSutkast1
             CurrentDay = Week[CurrentDayIndex];
         }
 
-        public async Task StartWeek()
+        public async Task StartWeek(int dayDelay, int hourDelay)
         {
             var running = true;
             while (running)
             {
-               // Console.WriteLine($"****{CurrentDay.GetDayName()}****");
-                await CurrentDay.StartDay();
+                await CurrentDay.StartDay(hourDelay);
                 DayChanger();
-                await Task.Delay(15000);
-                //Thread.Sleep(3500);
+                await Task.Delay(dayDelay);
+                //endre hourDelay om det ikke er workinghours
             }
-
         }
 
         public string GetCalendarInfo(string wantedInfo)
@@ -74,6 +61,16 @@ namespace BMSutkast1
             return " ";
         }
 
+        public void PrintWeekOverview()
+        {
+            Console.WriteLine($"\n");
+            foreach (var day in Week)
+            {
+                Console.WriteLine($"{day.GetDayName().PadRight(9, ' ')} Work hours:{day.PrintWorkingHours()}");
+                day.PrintDayOverview();
+                Console.WriteLine($"\n");
+            }
+        }
     }
 
 

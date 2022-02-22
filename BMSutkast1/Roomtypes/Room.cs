@@ -10,7 +10,7 @@ namespace BMSutkast1
 {
     public class Room
     {
-        private int Area; //areal sendes til romkontroller? avgjøre oppvarming og evt strømforbruk
+        private int Area;
         private Guid RoomId;
         protected internal int RoomNr { get; }
         protected string RoomType { get; set; }
@@ -24,12 +24,11 @@ namespace BMSutkast1
             RoomId = new Guid();
             _floorNr = floorNr;
             Area = area;
-            RoomNr = roomNr;  //CreateRoomNr(roomNr);
-            Controller = new RoomController(RoomType, RoomId, Area);
+            RoomNr = roomNr;
+            Controller = new RoomController(RoomType, RoomId);
         }
         public void PrintRoomInfo()
         {
-
             var roomtypeAndArea = Convert.ToString($"{RoomType}({Area}m2)");
             Console.WriteLine($"Nr: {RoomNr.ToString().PadLeft(2, ' ')}  Type: {roomtypeAndArea.PadRight(15, ' ')}  {Controller.PrintControllerInfo()}");
         }
@@ -46,14 +45,14 @@ namespace BMSutkast1
             Controller.State = state;
             await Controller.ChangeState();
         }
-
-        //sycklus() få inn:
-        //                  outdoortemp +/- inndoortemp i en while loop ->heat() ->cool()
-        //                  outdoor lux? +/- dimming - (N, S, Ø, V ?)
-        //      ELLER SELVE ROOM.SYCKLUS I EN WHILE?
-
-        // noen "steg" i temp fra metode- det blir fortere kaldt / varmt med høye/lave temp
-        
+        internal async Task SetUpdateOutdoorValues(double currentOutdoorTemperature, int currentOutdoorLux)
+        {
+            await Controller.SetUpdateOutdoorValues(currentOutdoorTemperature, currentOutdoorLux);
+        }
+        public void ChangeSetValue(string temp, int value)
+        {
+            Controller.ChangeSetValue(temp, value);
+        }
     }
 
 }

@@ -8,14 +8,13 @@ namespace BMSutkast1.Output
 {
     public class Heating : Output
     {
-        public bool Interlock;
-        //public bool On;
+        internal bool Interlock;
+        internal bool On;
         public Heating(Guid ControllerId) : base(ControllerId)
         {
             Type = "Heater";
-            //fåes fra romcontroller - eller bare av/på "signal"?
-            Interlock = false; // "Forigling mot cooling" <-
-           // On = false;
+            Interlock = false; 
+            On = false;  
         }
     }
 }

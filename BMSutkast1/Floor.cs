@@ -14,8 +14,6 @@ namespace BMSutkast1
         {
             State = Status.Sleep;
             FloorNr = floorNr;
-            
-            //FloorState = Status.Sleep; ////skal arves (reversert?) fra room, og sende til building
             _rooms = new List<Room>();
             const int officeCount = 10; //Hjelpevariabler for oppretting av rom <-- legges i constructor om en ønsker annen str. bygg
             const int cubicleCount = 5;
@@ -24,52 +22,45 @@ namespace BMSutkast1
             CreateCubicles(cubicleCount);
             CreateMingle(mingleCount);
             CreateReception();
-
         }
         private void CreateOffices(int officeCount)
         {
             for (var i = 0; i < officeCount; i++)
             {
-                _rooms.Add(new Office(6, _rooms.Count+1, FloorNr)); //6m2 minimum
+                _rooms.Add(new Office(6, _rooms.Count + 1, FloorNr)); //6m2 minimum
             }
         }
         private void CreateCubicles(int cubicleCount)
         {
             for (int i = 0; i < cubicleCount; i++)
             {
-                _rooms.Add(new Cubicle(50, _rooms.Count+1, FloorNr));
+                _rooms.Add(new Cubicle(50, _rooms.Count + 1, FloorNr));
             }
         }
         private void CreateMingle(int mingleCount)
         {
             for (int i = 0; i < mingleCount; i++)
             {
-                _rooms.Add(new Mingle(30, _rooms.Count+1, FloorNr));
+                _rooms.Add(new Mingle(30, _rooms.Count + 1, FloorNr));
             }
         }
         private void CreateReception()
         {
             if (FloorNr == 1) _rooms.Add(new Reception(10, _rooms.Count + 1, FloorNr));
         }
-
         public void PrintFloorInfo()
         {
             //avg temp? 
-            
+
             Console.WriteLine(@$"
-                    Floor number: {FloorNr} - Current State: {State} - Rooms: {_rooms.Count} - Powerconsumption: ???kw/h");
+                    Floor number: {FloorNr} - Current State: {State} - Rooms: {_rooms.Count}");
         }
-
-       /* {
-            //  Console.Clear();
-            Console.WriteLine(@$"
-                    Type:{RoomType} State:{State} 
-                    LYS:            Actual: {Lux.ActualLux} -> Wanted: {_setLux} :  Value%: {Light.Value}
-                    Varme:          Actual: {Temp.GetTemp()} -> Wanted: {_setTemperature} :  ON/OFF: H-{_heat.On}/C-{_cool.On}
-                    Ventilasjon:    ON/OFF: {Vent.On}");
-        }*/
-
-    public void PrintRoomOverview()
+        private object GetAvgTemp()
+        {
+            //rooms -> controller -> current temp / count
+            throw new NotImplementedException();
+        }
+        public void PrintRoomOverview()
         {
             Console.WriteLine("\n");
             foreach (var room in _rooms)
@@ -81,13 +72,11 @@ namespace BMSutkast1
         {
             return _rooms.Count;
         }
-
         public Room GetRoom(int roomNr)
         {
             return _rooms.Find(x => x.RoomNr == roomNr);
         }
-
-        public async Task ChangeState(Status state)
+        public async Task ChangeState(Status state, Calendar calendar)
         {
             State = state;
             foreach (var room in _rooms)
@@ -96,10 +85,24 @@ namespace BMSutkast1
                 else await room.ChangeState(Status.Standby);  //Hindre at alle rom blir satt til awake - må gjøres manuelt
             }
         }
-
         public int GetFloorNr()
         {
             return FloorNr;
+        }
+        public async Task SetUpdateOutdoorValues(double currentOutdoorTemperature, int currentOutdoorLux, int hourDelay)
+        {
+            foreach (var room in _rooms)
+            {
+                await room.SetUpdateOutdoorValues(currentOutdoorTemperature, currentOutdoorLux);
+                await Task.Delay(hourDelay);
+            }
+        }
+        public void ChangeSetTemp(int value)
+        {
+            foreach (var room in _rooms)
+            {
+                room.ChangeSetValue("Temp", value);
+            }
         }
     }
 }

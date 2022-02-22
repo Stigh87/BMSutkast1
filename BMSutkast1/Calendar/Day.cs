@@ -46,7 +46,6 @@ namespace BMSutkast1
             return _weatherstation._forecasts[time];
         }
 
-
         private bool CheckWorkTime(int time)
         {
             if (WorkHourEnd == 0 && WorkHourStart == 0) return false;
@@ -57,8 +56,6 @@ namespace BMSutkast1
         {
             return Hours[CurrentHourIndex];
         }
-
-   
 
         public void HourChanger()
         {
@@ -76,14 +73,12 @@ namespace BMSutkast1
             return Hours[CurrentHourIndex].Value;
         }
 
-        public async Task StartDay()
+        public async Task StartDay(int hourDelay)
         {
             foreach (var hour in Hours)
             {
-               // Console.WriteLine($"{hour.Value} - Lux: {hour.GetLux()} - Temp: {hour.GetTemp()}");
                 HourChanger();
-                await Task.Delay(5000);
-                //Thread.Sleep(500);
+                await Task.Delay(hourDelay);
             }
         }
 
@@ -106,6 +101,22 @@ namespace BMSutkast1
             var hour = GetCurrentHour().Value;
             var hourString = ConvertToString(hour);
             return hourString + ":00";
+        }
+
+        public void PrintDayOverview()
+        {
+            var linebreak = 0;
+            foreach (var hour in Hours)
+            {
+                //linjeskifte pr 6
+                Console.Write($"{ConvertToString(hour.Value).PadLeft(2, ' ')}:00 {hour.GetTemp().ToString().PadLeft(2, ' ')}c ||  ");
+                linebreak++;
+                if (linebreak == 6) {
+                    Console.WriteLine();
+                    linebreak = 0;
+                }
+            }
+            
         }
     }
 }

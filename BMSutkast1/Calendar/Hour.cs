@@ -19,8 +19,8 @@ namespace BMSutkast1
             _forecast = forecast;
             WorkHour = workHour;
             Value = value;
-            OutdoorLux = GetLux(); //skal sendes/lages en faktor for og taes med i Luxsensorer
-            OutdoorTemp = GetTemp(); //skal sendes/lages en faktor for og taes med i tempsensorer
+            OutdoorLux = GetLux(); 
+            OutdoorTemp = GetTemp();
         }
 
         public double GetTemp()

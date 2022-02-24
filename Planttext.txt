@@ -1,0 +1,128 @@
+@startuml
+
+title Relationships - Class Diagram
+
+class Display {
+"Print og vis info, nivå:"
+----
+Building
+Floor
+Room
+Outdoor
+}
+
+Building <|-down-|> Floor: com
+class Building {
+  List<Floors>
+  Display
+  State (awake, sleep)
+}
+Floor <|-down-|> Room: com
+class Floor {
+List<Rooms>
+State (awake, sleep)
+}
+
+Room <|-down- Office: Inheritance
+Room <|-down- Mingle: Inheritance
+Room <|-down- Cubicle: Inheritance
+Room <|-down- Meeting: Inheritance
+
+class Room {
+State (awake, sleep)
+----
+inputs - Motion (I/O)
+inputs - Temperatur (value + I/O)
+----
+output - Lights (0-100)
+output - Heat (I/O)
+output - Ventilation (I/O)
+
+}
+class Office {
+inputs - Door (I/O)
+inputs - Window (bool + I/O)
+}
+class Meeting {
+inputs - Door (I/O)
+inputs - Button(Sceene)
+}
+class Cubicle {
+inputs - Co2(value + I/O)
+inputs - Lux(value + I/O)
+}
+class Mingle{
+inputs - Co2(value + I/O)
+inputs - Lux(value + I/O)
+}
+Mingle <|-down- Reseption: Inheritance
+class Reseption{
+inputs - Door (I/O)
+}
+
+class RoomControl {
+  +CheckBuildingState(enum)
+}
+
+RoomControl <|-down- Sensor: RecievState
+class Sensor {
+  +CheckBuildingState(enum)
+}
+Sensor <|-down- IOSensor: Inheritance
+class IOSensor {
++Bool CheckState()
+}
+Sensor <|-down- ValueSensor: Inheritance
+class ValueSensor {
++Int GetValue()
+}
+ValueSensor <|-down- Button: Inheritance
+class Button {
+  +void Scenario(Sceene)
+}
+ValueSensor <|-down- Temperatur: Inheritance
+class Temperatur {
+  +Bool CheckTemp(value)
+}
+IOSensor <|-down- Motion: Inheritance
+class Motion {
+  +Bool I/O
+  +Bool RegMovement()
+  +void.Timer(Time)
+}
+IOSensor <|-down- Window: Inheritance
+class Window {
+  +Bool I/O
+}
+IOSensor <|-down- Door: Inheritance
+class Door {
+  +Bool I/O
+}
+ValueSensor <|-down- Lux: Inheritance
+class Lux {
+  +Bool CheckLux(value)
+}
+ValueSensor <|-down- Co2: Inheritance
+class Co2 {
+  +Bool CheckCo2(value)
+}
+
+RoomControl <|-down-|> Output: Send/GetState
+class Output {
+  +CheckBuildingState(enum)
+}
+Output <|-down- Light: Inheritance
+class Light {
++AdjustLights()
+}
+Output <|-down- Heat: Inheritance
+class Heat {
++interlock(Cooling)
++AdjustHeat()
+}
+Output <|-down- Cooling: Inheritance
+class Cooling {
++interlock(Heat)
++AdjustCooling()
+}
+@enduml

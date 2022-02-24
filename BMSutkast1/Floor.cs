@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace BMSutkast1
+namespace BMS
 {
     public class Floor
     {
@@ -76,25 +77,25 @@ namespace BMSutkast1
         {
             return _rooms.Find(x => x.RoomNr == roomNr);
         }
-        public async Task ChangeState(Status state, Calendar calendar)
+        public async Task ChangeState(Status state)
         {
             State = state;
             foreach (var room in _rooms)
             {
-                if (State == Status.Sleep) await room.ChangeState(State);
-                else await room.ChangeState(Status.Standby);  //Hindre at alle rom blir satt til awake - må gjøres manuelt
+                if (state == Status.Awake) room.ChangeState(Status.Standby);
+                else room.ChangeState(state);
             }
         }
         public int GetFloorNr()
         {
             return FloorNr;
         }
-        public async Task SetUpdateOutdoorValues(double currentOutdoorTemperature, int currentOutdoorLux, int hourDelay)
+        public async Task SetUpdateOutdoorValues(double currentOutdoorTemperature, int currentOutdoorLux)
         {
             foreach (var room in _rooms)
             {
                 await room.SetUpdateOutdoorValues(currentOutdoorTemperature, currentOutdoorLux);
-                await Task.Delay(hourDelay);
+                await Task.Delay(Timer.HourDelay);
             }
         }
         public void ChangeSetTemp(int value)
@@ -103,6 +104,23 @@ namespace BMSutkast1
             {
                 room.ChangeSetValue("Temp", value);
             }
+        }
+        public List<Room> GetRooms()
+        {
+            return _rooms;
+        }
+
+        public bool? CheckOccupied()
+        {
+            var occupied = false;
+            foreach (var room in _rooms)
+            {
+                if (room.GetController().CheckOccupied())
+                {
+                    return occupied = true;
+                } 
+            }
+            return occupied;
         }
     }
 }

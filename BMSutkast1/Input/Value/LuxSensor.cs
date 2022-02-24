@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BMSutkast1.Output;
+using BMS.Output;
 
-namespace BMSutkast1.Sensor
+namespace BMS.Sensor
 {
     public class LuxSensor : ValueSensor
     {

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BMSutkast1.Sensor;
+using BMS.Sensor;
 
-namespace BMSutkast1.Input
+namespace BMS.Input
 {
     public class WeatherStation
     {

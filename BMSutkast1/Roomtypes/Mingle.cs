@@ -1,4 +1,4 @@
-﻿namespace BMSutkast1
+﻿namespace BMS
 {
     internal class Mingle : Room
     {

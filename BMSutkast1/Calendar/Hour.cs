@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BMSutkast1.Input;
+using BMS.Input;
 
-namespace BMSutkast1
+namespace BMS
 {
     public class Hour
     {
@@ -27,7 +27,6 @@ namespace BMSutkast1
         {
             return _forecast.GetTemp();
         }
-
         public int GetLux()
         {
             return _forecast.GetLux();

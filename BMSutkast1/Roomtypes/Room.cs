@@ -4,9 +4,9 @@ using System.Data;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
-using BMSutkast1.Sensor;
+using BMS.Sensor;
 
-namespace BMSutkast1
+namespace BMS
 {
     public class Room
     {
@@ -18,7 +18,6 @@ namespace BMSutkast1
 
         //  ROOMCONTROLLER:
         protected RoomController Controller;
-
         public Room(int area, int roomNr, int floorNr)
         {
             RoomId = new Guid();
@@ -52,6 +51,14 @@ namespace BMSutkast1
         public void ChangeSetValue(string temp, int value)
         {
             Controller.ChangeSetValue(temp, value);
+        }
+        public void Populate()
+        {
+            Controller.Populate();
+        }
+        public void GoHome()
+        {
+            Controller.GoHome();
         }
     }
 

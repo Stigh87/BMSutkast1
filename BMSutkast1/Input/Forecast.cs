@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static BMSutkast1.Input.WeatherStation;
+using static BMS.Input.WeatherStation;
 
-namespace BMSutkast1.Input
+namespace BMS.Input
 {
     public class Forecast
     {

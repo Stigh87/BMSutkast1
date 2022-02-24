@@ -3,15 +3,11 @@ using System.Reflection.Metadata.Ecma335;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
-namespace BMSutkast1
+namespace BMS
 {
     public class Display
     {
-        /*          TO DO'S:
-            BONUS: Lage simulering av folk i bygget?
-        */
         public Building MyBuilding = new ();
-
         private static int GetInput()
         {
             var input = int.Parse(Console.ReadKey(true).KeyChar.ToString());
@@ -32,7 +28,6 @@ namespace BMSutkast1
             else if (command == 2) await PrintFloorsMenu();
             else if (command == 3) await PrintWeekAndWeather(calendar);
             else await MainMenu();
-
         }
 
         private async Task PrintWeekAndWeather(Calendar calendar)
@@ -158,7 +153,7 @@ namespace BMSutkast1
             MyBuilding.PrintCalendarOverview();
             MyBuilding.PrintFloorInfo(floor);
             var state = StateChanger(floor.State);
-            await floor.ChangeState(state, MyBuilding.GetCalendar());
+            await floor.ChangeState(state);
             await PrintFloorMenu(floor);
         }
 

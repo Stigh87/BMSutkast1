@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using BMSutkast1.Output;
-using BMSutkast1.Sensor;
+using BMS.Output;
+using BMS.Sensor;
 
-namespace BMSutkast1
+namespace BMS
 {
     public class RoomController
     {
@@ -15,6 +15,8 @@ namespace BMSutkast1
         public Guid RoomId { get; set; }
         private readonly string _roomType;
         internal Status State;
+
+        private bool occupied;
 
         //inputs:
         //IO-SENSOR
@@ -43,7 +45,7 @@ namespace BMSutkast1
         {
             RoomId = roomId;
             _roomType = roomtype;
-            Id = Guid.NewGuid();
+            Id = Guid.NewGuid(); 
             State = Status.Sleep;
             _motion = new MotionSensor(Id);
             _temp = new TemperatureSensor(Id);
@@ -69,6 +71,7 @@ namespace BMSutkast1
             _vent = new Ventilation(Id);
             _light = new Light(Id);
             _setTemperature = 15;
+            occupied = false;
         }
 
         public async Task ChangeState()
@@ -89,9 +92,9 @@ namespace BMSutkast1
         private async Task AdjustVentilation()
         {
             if (State == Status.Awake) _vent.On = true;
-            if (State == Status.Standby) ; //timer 10min så ventOff
+            if (State == Status.Standby) _vent.On = false; //timer 10min så ventOff
             if (State == Status.Sleep) _vent.On = false;
-            if (State == Status.Wakeup) ; //timer 10min så ventOff, om ikke awake fra motion.
+            if (State == Status.Wakeup) _vent.On = true; //timer 10min så ventOff, om ikke awake fra motion.
 
         }
         private async Task AdjustLights()
@@ -109,7 +112,7 @@ namespace BMSutkast1
                 }
                 _light.On = _lux.ActualLux != 0;
                 await _lux.UpdateActualLux(_light);
-                await Task.Delay(100);
+                await Task.Delay(Timer.CheckDelay/4);
             }
             if (State != Status.Awake) {_light.Value = 0; _light.On = false; }
         }
@@ -126,7 +129,7 @@ namespace BMSutkast1
                     SwitchHeating();
                 }
                 _temp.AdjustTemperature(_heat.On, _cool.On, _vent.On);
-                await Task.Delay(500);
+                await Task.Delay(Timer.CheckDelay);
             }
         }
         private void SwitchHeating()
@@ -152,9 +155,9 @@ namespace BMSutkast1
         }
         internal object PrintControllerInfo()
         {
-            var occupied = _motion.MotionOpen() ? "YES" : "NO";
+            var occupiedString = occupied ? "YES" : "NO";
             string info =
-                $"State: {State.ToString().PadRight(7, ' ')} - Temperature: {_temp.GetTemp().ToString().PadLeft(5, ' ')}c /{_setTemperature}c - Occupied: {occupied}";
+                $"State: {State.ToString().PadRight(7, ' ')} - Temperature: {_temp.GetTemp().ToString().PadLeft(5, ' ')}c /{_setTemperature}c - Occupied: {occupiedString}";
             return info;
         }
         public void ChangeSetValue(string type, int value)
@@ -175,6 +178,24 @@ namespace BMSutkast1
         {
            await _temp.SetUpdateOutdoorValue(currentOutdoorTemperature);
            await _lux.SetUpdateOutdoorValue(currentOutdoorLux, _light);
+        }
+        public bool CheckOccupied()
+        {
+            return occupied;
+        }
+        public void Populate()
+        {
+            _motion.DetectMotion();
+            occupied = true;
+            State = Status.Awake;
+            ChangeState();
+        }
+        public void GoHome()
+        {
+            _motion.TimeOut();
+            occupied = false;
+            State = Status.Standby;
+            ChangeState();
         }
     }
 }

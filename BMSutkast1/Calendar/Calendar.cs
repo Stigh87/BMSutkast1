@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BMSutkast1
+namespace BMS
 {
     public class Calendar
     {
@@ -32,25 +32,22 @@ namespace BMSutkast1
         {
             return CurrentDay;
         }
-        public void DayChanger()
+        public async Task DayChanger()
         {
             if (CurrentDayIndex == Week.Length -1) CurrentDayIndex = 0;
             else CurrentDayIndex++;
             CurrentDay = Week[CurrentDayIndex];
         }
-
-        public async Task StartWeek(int dayDelay, int hourDelay)
+        public async Task StartWeek(List<Floor> floors)
         {
             var running = true;
             while (running)
             {
-                await CurrentDay.StartDay(hourDelay);
-                DayChanger();
-                await Task.Delay(dayDelay);
-                //endre hourDelay om det ikke er workinghours
+                await CurrentDay.StartDay(floors);
+                await DayChanger();
+                await Task.Delay(Timer.DayDelay);
             }
         }
-
         public string GetCalendarInfo(string wantedInfo)
         {
             if (wantedInfo == "CurrentDay") return GetCurrentDay().GetDayName();
@@ -60,7 +57,6 @@ namespace BMSutkast1
             if (wantedInfo == "workingHours") return CurrentDay.PrintWorkingHours();
             return " ";
         }
-
         public void PrintWeekOverview()
         {
             Console.WriteLine($"\n");

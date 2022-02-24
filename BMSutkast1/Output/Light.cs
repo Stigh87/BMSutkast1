@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BMSutkast1.Sensor;
-using static BMSutkast1.Sensor.LuxSensor;
+using BMS.Sensor;
+using static BMS.Sensor.LuxSensor;
 
-namespace BMSutkast1.Output
+namespace BMS.Output
 {
     public class Light : Output
     {

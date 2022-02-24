@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BMSutkast1.Output
+namespace BMS.Output
 {
     public class Ventilation : Output
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BMSutkast1.Sensor
+namespace BMS.Sensor
 {
     public class TemperatureSensor : ValueSensor
     {
@@ -40,9 +40,9 @@ namespace BMSutkast1.Sensor
             if (compare > 10) change = -0.6 - rnd;
             else if (compare > 5) change = -0.4 - rnd;
             else if (compare > 2) change = -0.2 - rnd;
-            else if (compare < -10) change = 0.8 + rnd;
+            else if (compare < -10) change = 0.2 + rnd;
             else if (compare < -5) change = 0.6 + rnd;
-            else if (compare < -2) change = 0.4 + rnd;
+            else if (compare < -2) change = 0.8 + rnd;
             if (vent) change -= 0.2;
 
             return change;

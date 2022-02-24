@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BMSutkast1.Sensor
+namespace BMS.Sensor
 {
     public class Co2Sensor : ValueSensor
     {
